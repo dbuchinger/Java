@@ -12,7 +12,7 @@ public class TriangleTester {
 		Points point1 = new Points(2, 2);
 		Points point2 = new Points(3, 5);
 		Points point3 = new Points(4, 3);
-		Points testPoint = new Points(1,3);
+		Points testPoint = new Points(2, 3);
 		
 		Points highPoint = point1;
 		Points lowPoint = point1;
@@ -26,10 +26,6 @@ public class TriangleTester {
 //		}
 		
 		for (int i = 0; i < givenPoints.length; i++) {
-			System.out.println("\nStart\nCurrent high point: " + highPoint.coordinates());
-			System.out.println("Current low point: " + lowPoint.coordinates());
-			System.out.println("Current left point: " + leftPoint.coordinates());
-			System.out.println("Current right point: " + rightPoint.coordinates());
 			if (givenPoints[i].getX() < leftPoint.getX()) {
 				leftPoint = givenPoints[i];
 			}
@@ -42,14 +38,15 @@ public class TriangleTester {
 			if (givenPoints[i].getY() > highPoint.getY()) {
 				highPoint = givenPoints[i];
 			}
-			System.out.println("\nEnd\nCurrent high point: " + highPoint.coordinates());
-			System.out.println("Current low point: " + lowPoint.coordinates());
-			System.out.println("Current left point: " + leftPoint.coordinates());
-			System.out.println("Current right point: " + rightPoint.coordinates());
 		}
 		
 		
-		/*
+		
+		System.out.println("\nCurrent high point: " + highPoint.coordinates());
+		System.out.println("Current low point: " + lowPoint.coordinates());
+		System.out.println("Current left point: " + leftPoint.coordinates());
+		System.out.println("Current right point: " + rightPoint.coordinates()); 
+		 /*
 		System.out.println("What is the x coordinate of the test point?");
 		testPoint.setX(input.nextInt());
 		
@@ -59,36 +56,42 @@ public class TriangleTester {
 		System.out.println("The test point is at (" + testPoint.getX() + ", " + testPoint.getY() + ").");
 		*/
 		
-		Line line1 = null;
-		Line line2 = null;
-		Line line3 = null;
-		Line line4 = null;
+		Line leftLine = null;
+		Line rightLine = null;
+		Line highLine = null;
+		Line lowLine = null;
 		
 		if (leftPoint.getY() > testPoint.getY()) {
-			line1 = new Line(leftPoint, lowPoint);
+			leftLine = new Line(leftPoint, lowPoint);
 		}
 		else if (leftPoint.getY() <= testPoint.getY()) {
-			line1 = new Line(leftPoint, highPoint);
+			leftLine = new Line(leftPoint, highPoint);
 		}
 		
 		if (rightPoint.getY() > testPoint.getY()) {
-			line2 = new Line(rightPoint, lowPoint);
+			rightLine = new Line(rightPoint, lowPoint);
 		}
 		else if (rightPoint.getY() <= testPoint.getY()) {
-			line2 = new Line(rightPoint, highPoint);
+			rightLine = new Line(rightPoint, highPoint);
 		}
 		if (highPoint.getX() > testPoint.getX()) {
-			line3 = new Line(highPoint, leftPoint);
+			highLine = new Line(highPoint, leftPoint);
 		}
 		else if (highPoint.getX() <= testPoint.getX()) {
-			line3 = new Line(highPoint, rightPoint);
+			highLine = new Line(highPoint, rightPoint);
 		}
 		if (lowPoint.getX() > testPoint.getX()) {
-			line4 = new Line(lowPoint, leftPoint);
+			lowLine = new Line(lowPoint, leftPoint);
 		}
 		else if (lowPoint.getX() <= testPoint.getX()) {
-			line4 = new Line(lowPoint, rightPoint);
+			lowLine = new Line(lowPoint, rightPoint);
 		}
+		
+		Line line1 = new Line(point1, point2);
+		Line line2 = new Line(point2, point3);
+		Line line3 = new Line(point3, point1);
+		
+		
 		
 		
 		/*
@@ -100,31 +103,87 @@ public class TriangleTester {
 		}
 		*/
 		
-		negXBound(line1, testPoint);
-		negXBound(line2, testPoint);
+		xBound(line1, testPoint);
+		xBound(line2, testPoint);
+		xBound(line3, testPoint);
+		yBound(line1, testPoint);
+		yBound(line2, testPoint);
+		yBound(line3, testPoint);
 		
 		System.out.println("\nBounded left: " + negXBound + "\nBounded right: " + posXBound);
+		System.out.println("\nBounded low: " + negYBound + "\nBounded high: " + posYBound);
 		
 		
 	}
 	
-	public static void negXBound (Line line, Points testPoint) {
-		double check1 = line.getXStart() + (testPoint.getX() - line.getXStart()) * (1/line.getSlope());
-		if (check1 <= testPoint.getX()) {
+	public static void xBound (Line line, Points testPoint) {
+		double check = 0;
+		double right = line.getXStart();
+		double left = line.getXStart();
+		if (line.getXEnd() > right) {
+			right = line.getXEnd();
+		}
+		if (line.getXEnd() < left) {
+			left = line.getXEnd();
+		}
+		
+		if (line.getXDifference() == 0) {
+			check = line.getXStart();
+		}
+		else {
+			check = line.getXStart() + ((testPoint.getY() - line.getYStart()) / line.getSlope());
+		}
+		if (!((check >= left) && (check <= right))) {
+			return;
+		}
+		
+		//System.out.println(check);
+		
+		if (check <= testPoint.getX()) {
 			negXBound = true;
 		}
-		if (check1 >= testPoint.getX()) {
+		if (check >= testPoint.getX()) {
 			posXBound = true;
+		}
+	}
+	
+	public static void yBound (Line line, Points testPoint) {
+		double check = 0;
+		double high = line.getYStart();
+		double low = line.getYStart();
+		if (line.getYEnd() > high) {
+			high = line.getXEnd();
+		}
+		if (line.getYEnd() < low) {
+			low = line.getXEnd();
+		}
+		if (line.getXDifference() == 0) {
+			check = line.getXStart();
+		}
+		else {
+			check = line.getYStart() + ((testPoint.getX() - line.getXStart()) * line.getSlope());
+		}
+		if (!((check >= low) && (check <= high))) {
+			return;
+		}
+		
+		System.out.println(check);
+		
+		if (check <= testPoint.getY()) {
+			negYBound = true;
+		}
+		if (check >= testPoint.getY()) {
+			posYBound = true;
 		}
 	}
 	
 	/*
 	public static void negXBound (Line line, Points testPoint) {
-		double check1 = (testPoint.getX() - line.getXStart()) * line.getLine() + line.getYStart();
-		if (check1 <= testPoint.getX()) {
+		double check = (testPoint.getX() - line.getXStart()) * line.getLine() + line.getYStart();
+		if (check <= testPoint.getX()) {
 			negXBound = true;
 		}
-		if (check1 >= testPoint.getX()) {
+		if (check >= testPoint.getX()) {
 			posXBound = true;
 		}
 	}
