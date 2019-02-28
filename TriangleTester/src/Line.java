@@ -1,3 +1,5 @@
+// class for the line formed by two points and its slope
+
 public class Line {
 	
 	private double slope;

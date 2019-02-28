@@ -1,3 +1,5 @@
+// class for points and their coordinates
+
 public class Points {
 	private double x;
 	private double y;
