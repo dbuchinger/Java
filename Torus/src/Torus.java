@@ -3,13 +3,10 @@ import java.util.*;
 public class Torus {
 
 	public static void main(String[] args) {
-		int flag = Integer.valueOf(args[0]);
-		int[] start = new int[9];
-		for (int i = 0; i < 9; i++) {
-			start[i] = Integer.valueOf(args[i + 1]);
-		}
-		int option = flag / 100;
-		int cutoff = flag % 100;
+		int[] start = {1, 2, 3, 4, 0, 6, 7, 5, 8};
+		
+		int option = 3;
+		int cutoff = 1;
 		
 		switch (option) 
         {
